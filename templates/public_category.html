@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "nav.html" %}
+
+<section id="showItem" class="section">
+  <div class="container">
+    <div class="row">
+      <div class="categories-list">
+        <h3 class="list-header">
+          <span class="header-title">Categories</span>
+        </h3>
+        <ul class="list-category">
+          <a href="{{url_for('showCategory', categoryName = categoryName)}}" style="text-decoration:none">
+            <li class="items-item">
+              <span class="cat-name">{{categoryName}}</span>
+            </li>
+          </a>
+        </ul>
+      </div>
+
+      <div class="items-list">
+        <h3 class="list-header">
+          {% if count > 1 %}
+            <span class="header-title">{{categoryName}} Items (<strong>{{count}}</strong> Items)</span>
+          {% else %}
+            <span class="header-title">{{categoryName}} Items (<strong>{{count}}</strong> Item)</span>
+          {% endif %}
+        </h3>
+        <ul class="list-items">
+          {% for item in items %}
+            <a href="{{url_for('showItem', categoryName = item.category.name ,itemName = item.name )}}" style="text-decoration:none">
+              <li class="items-item">
+                <span class="item-name">{{item.name}}</span>
+              </li>
+            </a>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

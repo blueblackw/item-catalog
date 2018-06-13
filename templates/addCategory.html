@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "nav.html" %}
+
+<section id="addCategory" class="section">
+  <div class="row">
+    <div class="add-category-header">
+      <h2>Add Category</h2>
+    </div>
+    <div class="padding-top">
+      <form action="{{url_for('addCategory')}}" method = "post">
+          <div class="form-group">
+            <label for="name">Name:</label>
+            <input type ="text" class="form-control" id="name" maxlength="250" name="name">
+          </div>
+          <p></p>
+          <button type="submit" class="btn-sub" id="submit" value="submit">
+              Create
+          </button>
+          <a href="{{url_for('showCatalog')}}" class="btn-sub">Cancel</a>
+      </form>
+    </div>
+  </div>
+</section>
+    
+{% endblock %}

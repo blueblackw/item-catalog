@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "nav.html" %}
+
+<section id="editItem" class="section">
+    <div class="section-content container">
+        <div class="padding-none">
+            <h2>{{item.name}}</h2>
+        </div>
+        <form action="{{url_for('editItem', categoryName = item.category.name, itemName = item.name)}}" method = "post" class="padding-top">
+            <div class="form-group">
+                <label for="name">Title:</label>
+                <input type ="text" class="form-control" id="name" maxlength="250" name="name" value="{{item.name}}">
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea name="description" id="description" class="form-control" maxlength="250" rows="3">{{item.description}}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="current-picture">Picture:</label>
+            </div>
+            <div class="form-group">
+                <img src="{{item.picture}}" alt="{{item.picture}}" id="current-picture" style="width:400px;height:400px;">
+            </div>
+            <div class="form-group">
+                <label for="picture">Picture URL:</label>
+                <input type ="url" class="form-control" id="picture" maxlength="250" name="picture" placeholder="{{item.picture}}" value="{{item.picture}}">
+            </div>
+            <div class="form-group">
+                <label for="picture">Category:</label>
+                <select name="category">
+                {% for cat in categories %}
+                    <option value="{{cat.name}}" {% if cat == item.category %} selected {% endif %}>{{cat.name}}</option>
+                {% endfor %}
+                </select>
+            </div>
+            <div class = "form-group">
+                <button type="submit" class="btn-sub btn-default" id="submit" value="submit">
+                    Save
+                </button>
+                <a href = "{{url_for('showCategory', categoryName = item.category.name)}}">
+                    <button type="button" class="btn-sub btn-secondary">Cancel</button>
+                </a>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

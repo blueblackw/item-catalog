@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "nav.html" %}
+
+<section id="publicItemDetail" class="section">
+  <div class="container">
+    <div class="row">
+      <div class="padding-top">
+        <div class=item-title> Item: {{ item.name }}</div>
+        <img class="img-responsive" src="{{ item.picture }}" alt="{{ item.name }}" style="width:400px;height:400px;">
+        <p>{{ item.description }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

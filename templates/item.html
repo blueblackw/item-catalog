@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "nav.html" %}
+
+<section id="item" class="section">
+  <div class="container">
+    <div class="row">
+      <div class="padding-top">
+        <div class=item-title> Item: {{ item.name }}</div>
+        <img class="img-responsive" src="{{ item.picture }}" alt="{{ item.name }}" style="width:400px;height:400px;">
+        <p>{{ item.description }}</p>
+        <div class = "form-group">
+          <a href="{{url_for('editItem', categoryName = item.category.name, itemName = item.name)}}" style='text-decoration:none';>
+            <button type="button" class="btn-sub">Edit Item</button>
+          </a>
+          <a href="{{url_for('deleteItem', categoryName = item.category.name, itemName = item.name)}}" style='text-decoration:none';>
+            <button type="button" class="btn-sub">Delete Item</button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

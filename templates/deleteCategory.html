@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "nav.html" %}
+
+
+<div class="row">
+  <div class="padding-top">
+    <h3> <strong>Are you sure you want to delete category </strong><em>{{category.name}}</em><strong>?</strong> </h3>
+    <form action="{{url_for('deleteCategory', categoryName = category.name)}}" method='post'>
+      <button type="submit" class="btn-sub delete" id="submit" value="submit">
+        Delete
+      </button>
+      <a href="{{url_for('showCatalog')}}" class="btn-sub">Cancel</a>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

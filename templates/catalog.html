@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "nav.html" %}
+
+<div class="row">
+  <div class="categories-list">
+    <h3 class="list-header">
+      <span class="header-title">Categories</span>
+    </h3>
+    <ul class="list-category">
+      {% for cat in categories %}
+        <a href="{{url_for('showCategory', categoryName = cat.name )}}" style="text-decoration:none">
+          <li class="items-item">
+            <span class="cat-name">{{cat.name}}</span>
+          </li>
+        </a>
+      {% endfor %}
+    </ul>
+
+    <a href="{{url_for('addCategory')}}" class="navbar-text navbar-margin-btn">
+      <button type="button" class="btn-sub">
+        Add Category
+      </button>
+    </a>
+  </div>
+
+  <div class="items-list">
+    <h3 class="list-header">
+      <span class="header-title">Items</span>
+    </h3>
+    <ul class="list-items">
+      {% for item in items %}
+        <li class="items-item">
+          <a href="{{url_for('showItem', categoryName = item.category.name ,itemName = item.name )}}" style="text-decoration:none">
+            {{item.name}}
+          </a>
+          <span class="item-category">({{item.category.name}})</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+{% endblock %}
