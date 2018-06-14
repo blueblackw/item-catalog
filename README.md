@@ -1,3 +1,4 @@
+# Udacity Item Catalog
 The Item Catalog project consists of developing an application that provides a list of items. Each item belongs to a specific category. User can browse the descriptions of items. Also it provide a user registration and authentication system. Authenticated users are able to post, edit, or delete their own items.
 
 ## Required Software and Environment
