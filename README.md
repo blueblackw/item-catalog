@@ -3,7 +3,7 @@ The Item Catalog project consists of developing an application that provides a l
 
 ## Required Software and Environment
 - [VirtualBox](https://www.virtualbox.org/)
-- [Vagrant](https://www.vagrantup.com/)
+- [Vagrant](https://www.vagrantup.com/downloads.html)
 
 ## Set Up
 1. Install Vagrant and VirtualBox
