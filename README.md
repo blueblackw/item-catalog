@@ -14,7 +14,7 @@ The Item Catalog project consists of developing an application that provides a l
 
 ## Use the App
 1. Set up database for the app `python database_setup.py`
-2. Replace the `name`, `email` and `image` of `user_1` in `db_init.py` to your own in order for logging in and CRUD.
+2. Replace `name`, `email` and `image` of `user_1` in `db_init.py` to your own in order for logging in and CRUD.
 3. Initialize database with data `python db_init.py`.
 4. Run the application `python views.py`
 5. Browse the application in browsers with URL
