@@ -1,4 +1,9 @@
-import os, random, string, json, httplib2, requests
+import os
+import random
+import string
+import json
+import httplib2
+import requests
 from flask import Flask, render_template, request, redirect, jsonify
 from flask import url_for, flash, make_response
 from sqlalchemy import create_engine, asc, desc
@@ -16,20 +21,20 @@ app = Flask(__name__)
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 
-# application name
+# Name of the application
 APPLICATION_NAME = "Catalog Items App"
 
-# Connect to the database
-engine = create_engine('sqlite:///itemCatelog.db')
+# Connect to database
+engine = create_engine('sqlite:///itemCatalog.db')
 Base.metadata.bind = engine
 
-# Create session
+# Create database session
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
 def login_required(f):
-    '''Checks to see whether a user is logged in'''
+    """Checks to see whether a user is logged in"""
     @wraps(f)
     def x(*args, **kwargs):
         if 'username' not in login_session:
@@ -39,13 +44,15 @@ def login_required(f):
 
 
 # User helper functions
+
 def createUser(login_session):
     newUser = User(name=login_session['username'],
                    email=login_session['email'],
                    image=login_session['picture'])
     session.add(newUser)
     session.commit()
-    user = session.query(User).filter_by(email=login_session['email']).one()
+    user = session.query(User).filter_by(email=login_session['email'])\
+        .one_or_none()
     return user.id
 
 
@@ -62,10 +69,15 @@ def getUserID(email):
         return None
 
 
-# Show all categories
+# Show all categories on the catalog home page
 @app.route('/')
 @app.route('/catalog/')
 def showCatalog():
+    """
+    Show the home page of item catalog application
+    Only logged-in user can create a new category.
+    :return: the rendered page of catalog app
+    """
     categories = session.query(Category).order_by(asc(Category.name))
     items = session.query(Item).order_by(asc(Item.name))
 
@@ -84,12 +96,13 @@ def showCatalog():
 @app.route('/catalog/<path:categoryName>/')
 @app.route('/catalog/<path:categoryName>/items/')
 def showCategory(categoryName):
+    """
+    Show the page of a specific category.
+    :param categoryName: name of the category user wants to show
+    :return:  the rendered page of category
+    """
     categories = session.query(Category).order_by(asc(Category.name))
-    try:
-        category = session.query(Category).filter_by(name=categoryName).one()
-    except:
-        flash("Something wrong is here! Please check again.")
-        return redirect(url_for('showCatalog'))
+    category = session.query(Category).filter_by(name=categoryName).one()
     items = session.query(Item).filter_by(category=category)\
         .order_by(asc(Item.name)).all()
     itemsCount = session.query(Item).filter_by(category=category).count()
@@ -114,13 +127,16 @@ def showCategory(categoryName):
 # Show a specific item
 @app.route('/catalog/<path:categoryName>/<path:itemName>/')
 def showItem(categoryName, itemName):
-    try:
-        item = session.query(Item).filter_by(name=itemName).one()
-        itemPicture = item.picture
-        itemDescription = item.description
-    except:
-        flash("Something wrong is here! Please check again.")
-        return redirect(url_for('showCategory'))
+    """
+    Show the page of a specific item.
+    User sees difference page of item depending on whether he logs in.
+    :param categoryName: name of the category which the item belongs to
+    :param itemName: the name of the item
+    :return: the rendered page of item
+    """
+    item = session.query(Item).filter_by(name=itemName).one()
+    itemPicture = item.picture
+    itemDescription = item.description
     categories = session.query(Category).order_by(asc(Category.name))
     creator = getUserInfo(item.user_id)
 
@@ -141,6 +157,11 @@ def showItem(categoryName, itemName):
 @app.route('/catalog/addCategory/', methods=['GET', 'POST'])
 @login_required
 def addCategory():
+    """
+    Show the page of adding category.
+    Only logged-in user can see the page of adding category.
+    :return: the rendered page of adding a new category
+    """
     if request.method == 'POST':
         newCategory = Category(name=request.form['name'],
                                user_id=login_session['user_id'])
@@ -157,6 +178,13 @@ def addCategory():
 @app.route('/catalog/<path:categoryName>/edit/', methods=['GET', 'POST'])
 @login_required
 def editCategory(categoryName):
+    """
+    Show the page of edit a category.
+    A category can only be edited by the logged-in user who originally
+    creates the category.
+    :param categoryName: the name of category to be edited
+    :return: the rendered page of editing category
+    """
     category = session.query(Category).filter_by(name=categoryName).one()
     creator = getUserInfo(category.user_id)
 
@@ -182,6 +210,13 @@ def editCategory(categoryName):
 @app.route('/catalog/<path:categoryName>/delete/', methods=['GET', 'POST'])
 @login_required
 def deleteCategory(categoryName):
+    """
+    Show the page of delete a category.
+    A Category can only be deleted by the logged-in user who originally
+    creates the category.
+    :param categoryName: the name of category to be deleted
+    :return: the rendered page of deleting category
+    """
     category = session.query(Category).filter_by(name=categoryName).one()
     creator = getUserInfo(category.user_id)
 
@@ -212,6 +247,11 @@ def deleteCategory(categoryName):
 @app.route('/catalog/addItem/', methods=['GET', 'POST'])
 @login_required
 def addItem():
+    """
+    Show the page of creating a new item.
+    Only logged-in user can create a new item.
+    :return: the rendered page of creating a new item
+    """
     categories = session.query(Category).all()
     if request.method == 'POST':
         category = session.query(Category).filter_by(
@@ -235,6 +275,14 @@ def addItem():
            methods=['GET', 'POST'])
 @login_required
 def editItem(categoryName, itemName):
+    """
+    Show the page of editing an item.
+    An item can only be edited by the logged-in user
+    who originally creates the item.
+    :param categoryName: the name of category which the edited item belongs to
+    :param itemName: the name of item to be edited
+    :return: the rendered page of editing an item
+    """
     item = session.query(Item).filter_by(name=itemName).one()
     categories = session.query(Category).all()
     creator = getUserInfo(item.user_id)
@@ -271,6 +319,14 @@ def editItem(categoryName, itemName):
            methods=['GET', 'POST'])
 @login_required
 def deleteItem(categoryName, itemName):
+    """
+    Show the page of deleting an item.
+    An item can only be deleted by the logged-in user who originally
+    creates the item.
+    :param categoryName: the name of category which the item belongs to
+    :param itemName: the name of item to be deleted
+    :return: the rendered page of deleting an item
+    """
     item = session.query(Item).filter_by(name=itemName).one()
     category = session.query(Category).filter_by(name=categoryName).one()
     creator = getUserInfo(category.user_id)
@@ -299,7 +355,7 @@ def showLogin():
     return render_template('login.html', STATE=state)
 
 
-# GConnect
+# Create Google Sign in
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
@@ -402,9 +458,11 @@ def gconnect():
 
 
 # DISCONNECT - Revoke a current user's token and reset their login_session
+
+
 @app.route('/gdisconnect')
 def gdisconnect():
-    # Only disconnect a connected user.
+    # Only disconnect the user if he is connected
     access_token = login_session.get('access_token')
     if access_token is None:
         response = make_response(json.dumps('Current user not connected.'),
@@ -429,7 +487,7 @@ def gdisconnect():
         return response
 
 
-# fbconnect
+# Add Facebook Sign in
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
     # Validate anti-forgery state token
@@ -498,20 +556,22 @@ def fbconnect():
     return output
 
 
-# facebook disconnect
+# Facebook disconnect
 @app.route('/fbdisconnect')
 def fbdisconnect():
     facebook_id = login_session['facebook_id']
+
     # The access token must me included to successfully logout
     access_token = login_session['access_token']
     url = 'https://graph.facebook.com/%s/permissions?access_token=%s' \
           % (facebook_id, access_token)
+
     h = httplib2.Http()
     result = h.request(url, 'DELETE')[1]
     return "you have been logged out"
 
 
-# Disconnect based on provider
+# Disconnect based on login type (provider)
 @app.route('/disconnect')
 def disconnect():
     if 'provider' in login_session:
@@ -539,9 +599,9 @@ def disconnect():
 # JSON APIs to view catalog Information
 
 
-# List all categories
 @app.route('/catalog/JSON')
 def showCategoriesJSON():
+    """return JSON for all categories"""
     categories = session.query(Category).all()
     category_dict = [cat.serialize for cat in categories]
     for cat in range(len(category_dict)):
@@ -555,6 +615,7 @@ def showCategoriesJSON():
 @app.route('/catalog/<path:categoryName>/JSON')
 @app.route('/catalog/<path:categoryName>/items/JSON')
 def showCategoryJSON(categoryName):
+    """return JSON for a specific category"""
     category = session.query(Category).filter_by(name=categoryName).one()
     items = session.query(Item).filter_by(category_id=category.id).all()
     return jsonify(items=[item.serialize for item in items])
@@ -562,12 +623,14 @@ def showCategoryJSON(categoryName):
 
 @app.route('/catalog/items/JSON')
 def showItemsJSON():
+    """return JSON for all items"""
     items = session.query(Item).all()
     return jsonify(items=[item.serialize for item in items])
 
 
 @app.route('/catalog/<path:categoryName>/<path:itemName>/JSON')
 def showItemJSON(categoryName, itemName):
+    """return JSON for a specific item"""
     category = session.query(Category).filter_by(name=categoryName).one()
     item = session.query(Item).filter_by(name=itemName,
                                          category_id=category.id).one()

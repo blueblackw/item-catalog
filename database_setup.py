@@ -3,9 +3,8 @@ import sys
 
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
-from passlib.apps import custom_app_context as pwd_context
 
 # an instance of new base class of declarative_base
 Base = declarative_base()
@@ -26,9 +25,9 @@ class Category(Base):
     __tablename__ = 'category'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+    name = Column(String(250), nullable=False, unique=True)
     user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship(User, backref="category")
+    user = relationship(User)
 
     @property
     def serialize(self):
@@ -44,7 +43,7 @@ class Item(Base):
     __tablename__ = 'item'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+    name = Column(String(250), nullable=False, unique=True)
     description = Column(String(250))
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category, backref="items")
@@ -61,6 +60,7 @@ class Item(Base):
             'cat_id': self.category_id,
             'description': self.description
         }
+
 
 engine = create_engine('sqlite:///itemCatalog.db')
 
