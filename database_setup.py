@@ -46,10 +46,10 @@ class Item(Base):
     name = Column(String(250), nullable=False, unique=True)
     description = Column(String(250))
     category_id = Column(Integer, ForeignKey('category.id'))
-    category = relationship(Category, backref="items")
+    category = relationship(Category)
     picture = Column(String(250))
     user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship(User, backref="items")
+    user = relationship(User)
 
     @property
     def serialize(self):
